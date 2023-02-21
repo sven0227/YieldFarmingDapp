@@ -1,0 +1,50 @@
+body {
+  min-height: 100vh;
+  color: white;
+}
+
+.hover-underline {
+  position: relative;
+
+  & span::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 100%;
+    bottom: 0px;
+    height: 2px;
+    background-color: white;
+    transition: 0.3s;
+  }
+
+  & span.blue::after {
+    background-color: #4cb8da;
+  }
+
+  & span.green::after {
+    background-color: #9ffb98;
+  }
+
+  &:hover span::after {
+    left: 0;
+    right: 0;
+  }
+
+  &:hover span.blue::after,
+  &:hover span.green::after {
+    right: 24px;
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.rotate {
+  animation: rotation 2s infinite linear;
+}
