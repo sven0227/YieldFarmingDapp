@@ -1,37 +1,48 @@
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import Header from "./header"
+import TodayDifficulty from "./TodayDifficulty"
+import { useAppContext } from "@/context"
+import constants from "@/utils/constants"
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [wide, setWide] = useState<boolean>(false)
+  const [maxWidth, setMaxWidth] = useState<number>()
+  const { gameStatus, actionStatus, txStatus, appData, changeStatus } = useAppContext()
 
-  const checkWideScreen = () => {
-    if (window.innerWidth / window.innerHeight > 16 / 9) {
-      setWide(true)
-    } else {
-      setWide(false)
-    }
+  const changeMaxWidth = () => {
+    setMaxWidth(window.innerHeight * 16 / 9)
   }
 
-  // Check if screen ratio is bigger than 16:9 on resize
+  // Change max-width on resize
   useEffect(() => {
-    window.addEventListener('resize', checkWideScreen)
+    window.addEventListener('resize', changeMaxWidth)
     return () => {
-      window.removeEventListener('resize', checkWideScreen)
+      window.removeEventListener('resize', changeMaxWidth)
     }
   })
 
-  // Check if screen ratio is bigger than 16:9 on mount
+  // Set max-width on mount
   useEffect(() => {
-    checkWideScreen()
+    changeMaxWidth()
   }, [])
 
   return (
-    <>
-      <Header />
-      {children}
-      {/* Background Image */}
-      <div className={`absolute z-[-1] top-0 left-0 w-full h-full bg-[#515151] bg-[url('/images/NY_Monochrome_BG_xl.jpg')] lg:bg-[url('/images/NY_Monochrome_BG_2k.jpg')] 2k:bg-[url('/images/NY_Monochrome_BG_4k.jpg')] 4k:bg-[url('/images/NY_Monochrome_BG_8k.jpg')] bg-bottom bg-no-repeat ${wide ? "bg-contain" : "bg-cover"}`} />
-    </>
+    <div className={gameStatus === constants.DISCONNECTED || gameStatus === constants.CONNECTING ? "bg-[#515151]" : "bg-[#127FBC]"}>
+      <div
+        className={`min-h-screen flex flex-col mx-auto bg-bottom bg-no-repeat bg-cover duration-1000
+          ${gameStatus === constants.DISCONNECTED || gameStatus === constants.CONNECTING ? "mono-bg" : (
+            gameStatus !== constants.CUTSCENE_1 && (
+              gameStatus === constants.NEW_GAME ? "color-new-bg" : "color-crowd-bg"
+            )
+          )}`}
+        style={{ maxWidth }}
+      >
+        <Header />
+        <div className="relative flex-grow flex items-center justify-center">
+          <TodayDifficulty />
+          {children}
+        </div>
+      </div>
+    </div>
   )
 }
 

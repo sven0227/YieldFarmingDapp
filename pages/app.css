@@ -1,0 +1,16 @@
+button {
+  background-color: green;
+}
+
+body {
+  background-color: gray;
+}
+
+div {
+  background-color: gray;
+  word-wrap: break-word;
+}
+
+input {
+  background-color: brown;
+}

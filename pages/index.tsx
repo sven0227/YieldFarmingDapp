@@ -1,58 +1,35 @@
+import { useEffect } from 'react'
 import type { NextPage } from "next"
 import Head from "next/head"
 import Layout from "@/layout"
+import Intro from "@/components/Intro"
+import CutScene1 from "@/components/CutScene1"
+import NewGame from "@/components/NewGame"
+import FarmingInfo from "@/components/FarmingInfo"
+import Deadline1 from "@/components/Deadline1"
+import Deadline2 from "@/components/Deadline2"
+import GameOver from "@/components/GameOver"
 import { useAppContext } from "@/context"
-import { useState } from 'react'
-
-
-const defaultParams = {
-  depositAmount: 10
-}
+import constants from "@/utils/constants"
 
 const Home: NextPage = () => {
+  const { gameStatus, actionStatus, txStatus, appData, changeStatus, update, wallet } = useAppContext()
 
-  const { connected, connecting, connect, setAccounts, accounts, contract } = useAppContext()
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      console.log("GAME_STATUS:", gameStatus)
+      console.log("ACTION_STATUS:", actionStatus)
+      console.log("APP_DATA:", appData)
 
-  const [loading, setLoading] = useState<boolean>(false)
-  const [startFarming, setStartFarming] = useState<any>({
-    farmer: "Loading...",
-    farmingID: "Loading...",
-    startDay: "Loading...",
-    farmingPower: "Loading...",
-  })
-  const [isSuccess, setSuccess] = useState<boolean>(false)
-  const [isFailed, setFailed] = useState<boolean>(false)
-  const [txHash, setTxHash] = useState<string>("")
+      if (gameStatus !== constants.DISCONNECTED && gameStatus !== constants.CUTSCENE_1 && actionStatus === constants.DISPLAY) {
+        update()
+      }
+    }, 2000)
 
-  const onClickStartFarming = async () => {
-    try {
-      let stakeTx = await contract.startFarming(defaultParams.depositAmount * 1e8)
-      setLoading(true)
-
-      contract.on(
-        "StartFarming",
-        (farmer: string, farmingID: string, startDay: string, farmingPower: string) => {
-          setStartFarming({
-            farmer: farmer,
-            farmingID: farmingID,
-            startDay: startDay,
-            farmingPower: farmingPower,
-          })
-        }
-      )
-
-      let txReceipt = await stakeTx.wait()
-      setTxHash(txReceipt.events[0].transactionHash)
-      setSuccess(true)
-      setFailed(false)
-    } catch (err) {
-      console.log("Transaktion ist fehlgeschlagen!")
-      setLoading(false)
-      setSuccess(false)
-      setFailed(true)
+    return () => {
+      clearInterval(interval)
     }
-    setLoading(false)
-  }
+  }, [gameStatus, actionStatus, wallet])
 
   return (
     <>
@@ -61,8 +38,15 @@ const Home: NextPage = () => {
       </Head>
 
       <Layout>
-        <h1>Homepage.</h1>
-      </Layout>
+        {gameStatus === constants.DISCONNECTED && <Intro />}
+        {gameStatus === constants.CONNECTING && <></>}
+        {gameStatus === constants.CUTSCENE_1 && <CutScene1 />}
+        {gameStatus === constants.NEW_GAME && <NewGame />}
+        {gameStatus === constants.FARMING && <FarmingInfo />}
+        {gameStatus === constants.DEADLINE_1 && <Deadline1 />}
+        {gameStatus === constants.DEADLINE_2 && <Deadline2 />}
+        {gameStatus === constants.GAMEOVER && <GameOver />}
+      </Layout >
     </>
   )
 }

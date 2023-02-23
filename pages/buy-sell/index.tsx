@@ -1,6 +1,7 @@
 import type { NextPage } from "next"
 import Head from "next/head"
 import Layout from "@/layout"
+import TBD from "@/components/TBD"
 
 const BuySell: NextPage = () => {
   return (
@@ -10,7 +11,7 @@ const BuySell: NextPage = () => {
       </Head>
 
       <Layout>
-        <h2>Buy/Sell page.</h2>
+        <TBD title="Buy/Sell PIT" />
       </Layout>
     </>
   )

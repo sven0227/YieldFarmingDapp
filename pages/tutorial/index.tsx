@@ -1,6 +1,7 @@
 import type { NextPage } from "next"
 import Head from "next/head"
 import Layout from "@/layout"
+import TBD from "@/components/TBD"
 
 const Tutorial: NextPage = () => {
   return (
@@ -10,7 +11,7 @@ const Tutorial: NextPage = () => {
       </Head>
 
       <Layout>
-        <h2>Tutorial page.</h2>
+        <TBD title="Tutorial" />
       </Layout>
     </>
   )
